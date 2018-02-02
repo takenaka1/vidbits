@@ -2,7 +2,11 @@
 
   <form class="input-form" action="/videos" method="post" />
   <input id="title-input" name="title" />
-  <textarea id="description-input" name="description"></textarea>
+  {{#if error}}
+  <span>{{error.message}}</span>
+  {{/if}}
+  <textarea id="description-input" name="description">{{video.description}}</textarea>
+  <input id="url-input" name="url" value={{video.url}} />
   <button class="button submit-button" id="submit-button" type="submit">
   <p>Save a video</p>
   </button>

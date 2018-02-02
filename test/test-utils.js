@@ -2,13 +2,16 @@ const {jsdom} = require('jsdom');
 
 const Item = require('../models/video');
 
+const generateRandomUrl = (domain) => {
+  return `http://${domain}/${Math.random()}`;
+};
+
 // Create and return a sample Item object
 const buildItemObject = (options = {}) => {
   const title = options.title || 'My favorite item';
-  //const imageUrl = options.imageUrl || 'http://placebear.com/g/200/300';
+  const url = generateRandomUrl('xyz.com');
   const description = options.description || 'Just the best item';
-  //return {title, imageUrl, description};
-  return {title, description};
+  return {title, url, description};
 };
 
 // Add a sample Item object to mongodb
@@ -31,4 +34,5 @@ module.exports = {
   buildItemObject,
   seedItemToDatabase,
   parseTextFromHTML,
+  generateRandomUrl
 };
