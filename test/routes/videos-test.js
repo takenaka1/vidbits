@@ -219,6 +219,21 @@ describe('POST', () => {
       assert.equal(jsdom(response.text).querySelector('[name="url"]').value, itemToCreate.url);
     });
   });
+
+  describe('/videos/:id/deletions', () => {
+    beforeEach(connectDatabase);
+    afterEach(disconnectDatabase);
+    it('removes the record', async () => {
+      const itemToCreate = await seedItemToDatabase();
+
+      const response = await request(app)
+        .post(`/videos/${itemToCreate._id}/deletions`);
+
+      const deletedItem = await Video.find({_id: itemToCreate._id});
+      assert.equal(deletedItem.length, 0);
+    });
+
+  });
 });
 
 describe('GET', () => {

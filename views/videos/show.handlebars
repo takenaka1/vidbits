@@ -3,6 +3,9 @@
     <div class="video-title">
       <h1>{{video.title}}</h1>
       <a id="edit" href="/videos/{{video._id}}/edit">Edit</a>
+      <form method="post" action="/videos/{{video._id}}/deletions">
+        <input id="delete" type="submit" value="Delete">
+      </form>
     </div>
     <iframe class="video-player" src="{{video.url}}"></iframe>
     <div class="video-description">
