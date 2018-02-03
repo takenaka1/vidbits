@@ -1,6 +1,6 @@
 <div>
 
-  <form class="input-form" action="/videos" method="post" />
+  <form class="input-form" action="/videos/{{video._id}}/updates" method="post" />
   <input id="title-input" name="title" value={{video.title}} />
   {{#if error}}
   <span>{{error.message}}</span>

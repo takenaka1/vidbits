@@ -135,6 +135,90 @@ describe('POST', () => {
       assert.include(parseTextFromHTML(response.text, 'body'), '`url` is required');
     });
   });
+
+  describe('/videos/:id/updates', () => {
+    beforeEach(connectDatabase);
+    afterEach(disconnectDatabase);
+    it('updates the record', async () => {
+      const itemToCreate = await seedItemToDatabase();
+
+      const title = 'newtitle';
+      const description = 'newdescription';
+      const url = generateRandomUrl('newexample.com');
+
+      const response = await request(app)
+        .post(`/videos/${itemToCreate._id}/updates`)
+        .type('form')
+        .send({title, description, url});
+
+      const updatedItem = await Video.findOne({_id: itemToCreate._id});
+      assert.include(updatedItem, {title, description, url});
+    });
+
+    it('redirects to the show page', async () => {
+      const itemToCreate = await seedItemToDatabase();
+
+      const title = 'newtitle';
+      const description = 'newdescription';
+      const url = generateRandomUrl('newexample.com');
+
+      const response = await request(app)
+        .post(`/videos/${itemToCreate._id}/updates`)
+        .type('form')
+        .send({title, description, url});
+
+      assert.equal(response.status, 302);
+      assert.equal(response.headers.location, `/videos/${itemToCreate._id}`);
+    });
+
+    it('does not save the invalid record', async () => {
+      const itemToCreate = await seedItemToDatabase();
+
+      const title = '';
+      const description = 'newdescription';
+      const url = generateRandomUrl('newexample.com');
+
+      const response = await request(app)
+        .post(`/videos/${itemToCreate._id}/updates`)
+        .type('form')
+        .send({title, description, url});
+
+      const updatedItem = await Video.findOne({_id: itemToCreate._id});
+      assert.equal(updatedItem.title, itemToCreate.title);
+      assert.equal(updatedItem.description, itemToCreate.description);
+      assert.equal(updatedItem.url, itemToCreate.url);
+    });
+
+    it('responds with a 400 when the record is invalid', async () => {
+      const itemToCreate = await seedItemToDatabase();
+
+      const title = '';
+      const description = 'newdescription';
+      const url = generateRandomUrl('newexample.com');
+
+      const response = await request(app)
+        .post(`/videos/${itemToCreate._id}/updates`)
+        .type('form')
+        .send({title, description, url});
+
+      assert.equal(response.status, 400);
+    });
+
+    it('renders Edit form when the record is invalid', async () => {
+      const itemToCreate = await seedItemToDatabase();
+
+      const title = '';
+      const description = 'newdescription';
+      const url = itemToCreate.url;
+
+      const response = await request(app)
+        .post(`/videos/${itemToCreate._id}/updates`)
+        .type('form')
+        .send({title, description, url});
+
+      assert.equal(jsdom(response.text).querySelector('[name="url"]').value, itemToCreate.url);
+    });
+  });
 });
 
 describe('GET', () => {
@@ -166,4 +250,18 @@ describe('GET', () => {
       assert.include(parseTextFromHTML(response.text, 'h1'), itemToCreate.title);
     });
   });
+
+  describe('/videos/:id/edit', () => {
+    beforeEach(connectDatabase);
+    afterEach(disconnectDatabase);
+    it('renders a form for the Video', async () => {
+      const itemToCreate = await seedItemToDatabase({title: 'title111'});
+      const response = await request(app)
+        .get(`/videos/${itemToCreate._id}/edit`);
+
+      assert.equal(jsdom(response.text).querySelector('[name="title"]').value, itemToCreate.title);
+      assert.equal(jsdom(response.text).querySelector('[name="description"]').value, itemToCreate.description);
+      assert.equal(jsdom(response.text).querySelector('[name="url"]').value, itemToCreate.url);
+    });
+  })
 });

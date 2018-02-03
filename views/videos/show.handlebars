@@ -2,6 +2,7 @@
   <div class="video-card">
     <div class="video-title">
       <h1>{{video.title}}</h1>
+      <a id="edit" href="/videos/{{video._id}}/edit">Edit</a>
     </div>
     <iframe class="video-player" src="{{video.url}}"></iframe>
     <div class="video-description">
